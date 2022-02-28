@@ -20,6 +20,7 @@ namespace Minecraft_Clicker
         private bool mousedownCPS2;
         private bool iswindowjavanow;
         private bool InventoryOpen;
+        private bool jitter;
 
 
         [DllImport("User32.Dll", EntryPoint = "PostMessageA")]
@@ -160,7 +161,7 @@ namespace Minecraft_Clicker
                     }
                     else
                     {
-                        bindBtn.Text = keydata;
+                        bindBtn.Text =  keydata;
                     }
                 }
             }
@@ -206,7 +207,7 @@ namespace Minecraft_Clicker
             if (RGBtoggle.Text.Contains("disable"))
             {
                 RGBtoggle.Text = "enable";
-                btnToggle.ForeColor = Color.White;
+                /*btnToggle.ForeColor = Color.White;
                 label3.ForeColor = Color.FromArgb(154, 197, 39);
                 CPSTrackbar.ThumbColor = Color.FromArgb(154, 197, 39);
                 CPSTrackbar.ElapsedColor = Color.FromArgb(154, 197, 39);
@@ -219,15 +220,14 @@ namespace Minecraft_Clicker
                 CPSTrackbar2.ThumbColor = Color.FromArgb(154, 197, 39);
                 label9.ForeColor = Color.White;
                 label7.ForeColor = Color.FromArgb(154, 197, 39);
-                btnToggle2.ForeColor = Color.White;
-
-
+                btnToggle2.ForeColor = Color.White;*/
                 RGB.Stop();
             }
             else if (RGBtoggle.Text.Contains("enable"))
             {
                 RGBtoggle.Text = "disable";
                 RGB.Start();
+                UIColor.Stop();
             }
         }
 
@@ -314,6 +314,7 @@ namespace Minecraft_Clicker
                 Thread.Sleep(number);
                 PostMessage(hWnd, 0x0202, 0, 0);
                 hitsound();
+
             }
         }
 
@@ -405,6 +406,242 @@ namespace Minecraft_Clicker
             {
                 mousedownCPS2 = true;
             }
+        }
+
+        private void bunifuHSlider1_Scroll_1(object sender, Utilities.BunifuSlider.BunifuHScrollBar.ScrollEventArgs e)
+        {
+
+        }
+
+        int UIR = 154, UIG = 197, UIB = 39;
+
+        private void RGBSliderG_Scroll(object sender, Utilities.BunifuSlider.BunifuHScrollBar.ScrollEventArgs e)
+        {
+            //UIG = RGBSliderG.Value;
+        }
+
+        private void RGBSliderB_Scroll(object sender, Utilities.BunifuSlider.BunifuHScrollBar.ScrollEventArgs e)
+        {
+            //UIB = RGBSliderB.Value;
+        }
+
+        [DllImport("user32.dll")]
+        static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        public static void RelativeMove(int relx, int rely)
+        {
+            mouse_event(0x0001, relx, rely, 0, 0);
+        }
+
+        private void Jitter_Tick(object sender, EventArgs e)
+        {
+
+            if (active == true && iswindowjavanow == true)
+            {
+                int stepX = 0;
+                int stepY = 0;
+                //Random jitterX = new Random();
+                stepX = int.Parse(textBox3.Text);
+                //Random jitterY = new Random();
+                stepY = int.Parse(textBox4.Text);
+                //int stepX = jitterX.Next(textBox3.Value, 0);
+                RelativeMove((int)((int)stepX * 0.3), (int)((int)stepY * 0.3));
+            }
+
+        }
+
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void jitterToggle_Click(object sender, EventArgs e)
+        {
+            if (jitterToggle.Text.Contains("disable"))
+            {
+                jitterToggle.Text = "enable";
+                jitter = false;
+                Jitter.Stop();
+
+            }
+            else if (jitterToggle.Text.Contains("enable"))
+            {
+                jitterToggle.Text = "disable";
+                jitter = true;
+                Jitter.Start();
+            }
+        }
+
+        private int FluxX;
+        private int FluxY;
+
+        private void jitterFlux_Tick(object sender, EventArgs e)
+        {
+            min = JitterSlider.Value - 10;
+            max = JitterSlider.Value + 10;
+            Random randJitterflux = new Random();
+            double jitterflux = randJitterflux.Next(min, max);
+            textBox3.Invoke((MethodInvoker)(() => textBox3.Text = jitterflux.ToString()));
+            FluxX = int.Parse(textBox3.Text);
+
+        }
+
+        int min2;
+        int max2;
+
+        private void jitterFlux2_Tick(object sender, EventArgs e)
+        {
+            min2 = JitterSlider.Value - 10;
+            max2 = JitterSlider.Value + 10;
+            Random randJitterflux2 = new Random();
+            double jitterflux2 = randJitterflux2.Next(min2, max2);
+            textBox4.Invoke((MethodInvoker)(() => textBox4.Text = jitterflux2.ToString()));
+            FluxY = int.Parse(textBox4.Text);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ClickerMenubtn_Click(object sender, EventArgs e)
+        {
+            ClickerGroupBox.Visible = true;
+            JitterGroupBox.Visible = false;
+            VisualGroupBox.Visible = false;
+            SettingsGroupBox.Visible = false;
+            AboutGroupBox.Visible = false;
+            UIColor.Stop();
+        }
+
+        private void JitterMenubtn_Click(object sender, EventArgs e)
+        {
+            ClickerGroupBox.Visible = false;
+            JitterGroupBox.Visible = true;
+            VisualGroupBox.Visible = false;
+            SettingsGroupBox.Visible = false;
+            AboutGroupBox.Visible = false;
+            UIColor.Stop();
+        }
+
+        private void VisualMenubtn_Click(object sender, EventArgs e)
+        {
+            ClickerGroupBox.Visible = false;
+            JitterGroupBox.Visible = false;
+            VisualGroupBox.Visible = true;
+            SettingsGroupBox.Visible = false;
+            AboutGroupBox.Visible = false;
+            UIColor.Start();
+        }
+
+        private void SettingsMenubtn_Click(object sender, EventArgs e)
+        {
+            ClickerGroupBox.Visible = false;
+            JitterGroupBox.Visible = false;
+            VisualGroupBox.Visible = false;
+            SettingsGroupBox.Visible = true;
+            AboutGroupBox.Visible = false;
+            UIColor.Stop();
+        }
+
+        private void AboutMenubtn_Click(object sender, EventArgs e)
+        {
+            AboutGroupBox.Visible = true ;
+            ClickerGroupBox.Visible = false;
+            JitterGroupBox.Visible = false;
+            VisualGroupBox.Visible = false;
+            SettingsGroupBox.Visible = false;
+            UIColor.Stop();
+        }
+
+        private void RGBSliderR_Scroll(object sender, Utilities.BunifuSlider.BunifuHScrollBar.ScrollEventArgs e)
+        {
+            //UIR = RGBSliderR.Value;
+        }
+
+        private void UIColor_Tick(object sender, EventArgs e)
+        {
+            UIR = RGBSliderR.Value;
+            UIG = RGBSliderG.Value;
+            UIB = RGBSliderB.Value;
+            /*if (RGBtoggle.Text.Contains("disable"))
+            {
+                btnToggle.ForeColor = Color.FromArgb(r, g, b);
+                label3.ForeColor = Color.FromArgb(r, g, b);
+                CPSTrackbar.ThumbColor = Color.FromArgb(r, g, b);
+                CPSTrackbar.ElapsedColor = Color.FromArgb(r, g, b);
+                bindBtn.ForeColor = Color.FromArgb(r, g, b);
+                CPSValue.ForeColor = Color.FromArgb(r, g, b);
+                RGBtoggle.ForeColor = Color.FromArgb(r, g, b);
+                clickSounds.ForeColor = Color.FromArgb(r, g, b);
+                label7.ForeColor = Color.FromArgb(r, g, b);
+                CPSTrackbar2.ElapsedColor = Color.FromArgb(r, g, b);
+                CPSTrackbar2.ThumbColor = Color.FromArgb(r, g, b);
+                btnToggle2.ForeColor = Color.FromArgb(r, g, b);
+                label7.ForeColor = Color.FromArgb(r, g, b);
+                label9.ForeColor = Color.FromArgb(r, g, b);
+                CPSValue2.ForeColor = Color.FromArgb(r, g, b);
+                if (r > 0 && b == 0)
+                {
+                    r--;
+                    g++;
+                }
+                if (g > 0 && r == 0)
+                {
+                    g--;
+                    b++;
+
+                }
+                if (b > 0 && g == 0)
+                {
+                    b--;
+                    r++;
+                }
+            }*/
+            RGBSliderR.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            RGBSliderG.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            RGBSliderB.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            RGBSliderR.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            RGBSliderG.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            RGBSliderB.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            label9.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            //btnToggle.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            label3.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSTrackbar.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSTrackbar.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            //bindBtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSValue.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            //RGBtoggle.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            //clickSounds.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            label7.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSTrackbar2.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSTrackbar2.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            //btnToggle2.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            label7.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            label9.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            CPSValue2.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            VisualMenubtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            VisualMenubtn.IdleForecolor = Color.FromArgb(UIR, UIG, UIB);
+            VisualMenubtn.ActiveForecolor = Color.FromArgb(UIR, UIG, UIB);
+            ClickerMenubtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            ClickerMenubtn.IdleForecolor = Color.FromArgb(UIR, UIG, UIB);
+            ClickerMenubtn.ActiveForecolor = Color.FromArgb(UIR, UIG, UIB);
+            JitterMenubtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            JitterMenubtn.IdleForecolor = Color.FromArgb(UIR, UIG, UIB);
+            JitterMenubtn.ActiveForecolor = Color.FromArgb(UIR, UIG, UIB);
+            SettingsMenubtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            SettingsMenubtn.IdleForecolor = Color.FromArgb(UIR, UIG, UIB);
+            SettingsMenubtn.ActiveForecolor = Color.FromArgb(UIR, UIG, UIB);
+            AboutMenubtn.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            AboutMenubtn.IdleForecolor = Color.FromArgb(UIR, UIG, UIB);
+            AboutMenubtn.ActiveForecolor = Color.FromArgb(UIR, UIG, UIB);
+            JitterSlider.ThumbColor = Color.FromArgb(UIR, UIG, UIB);
+            JitterSlider.ElapsedColor = Color.FromArgb(UIR, UIG, UIB);
+            //jitterToggle.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+            //clickSounds.ForeColor = Color.FromArgb(UIR, UIG, UIB);
+
+
         }
 
         private void IsMouseDown_Tick(object sender, EventArgs e)
